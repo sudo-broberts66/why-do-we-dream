@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Why We Dream What We Dream</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="One night of sleep, from the inside. An immersive answer to why we dream what we dream, generated entirely from code.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/dream.css">
+</head>
+<body>
+
+<canvas id="dream-canvas" aria-hidden="true"></canvas>
+<div class="nogl-sky" aria-hidden="true"></div>
+<div id="labels" aria-hidden="true"></div>
+
+<header class="instrument" id="instrument">
+  <div class="readout" aria-live="off">
+    <span class="clock" id="clock">23:14</span>
+    <span class="stage" id="stage">Awake</span>
+  </div>
+  <figure class="hypno" aria-label="Hypnogram: sleep stages across the night, with the current time marked">
+    <svg id="hypnogram" viewBox="0 0 492 64" preserveAspectRatio="none" role="img" aria-hidden="true"></svg>
+  </figure>
+  <div class="controls">
+    <button type="button" class="ctl" id="btn-drift" aria-pressed="false" title="Let the night scroll by itself">
+      <span class="ctl-icon drift-icon" aria-hidden="true"></span><span class="ctl-label">Drift</span>
+    </button>
+    <button type="button" class="ctl" id="btn-sound" aria-pressed="false" title="Sound on or off">
+      <span class="ctl-icon sound-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="ctl-label">Sound</span>
+    </button>
+  </div>
+</header>
+
+<main id="night">
+
+<!-- ═══════════════════════════════ 23:14 · AWAKE ═══════════════════════════════ -->
+<section class="shot flow hero" id="top" data-scene="threshold" data-range="0,0.34" data-clock="14,18" style="--h:100">
+  <div class="card-wrap pos-center">
+    <div class="card hero-card">
+      <h1 class="title">Why do we dream <em>what</em> we dream?</h1>
+      <p class="lede">Tonight you will lie down, go blind, lose the use of your body and hallucinate for about two hours. By breakfast most of it will be gone. This is one night, followed from the inside.</p>
+      <form class="seeds" id="seeds" autocomplete="off">
+        <p class="seeds-ask">Before you go under, leave three things from your day. You will meet them again.</p>
+        <div class="seed-row">
+          <label for="seed-person">Someone you saw or thought about</label>
+          <input id="seed-person" name="person" type="text" maxlength="40" placeholder="an old friend" spellcheck="false">
+        </div>
+        <div class="seed-row">
+          <label for="seed-place">Somewhere you were</label>
+          <input id="seed-place" name="place" type="text" maxlength="40" placeholder="the house you grew up in" spellcheck="false">
+        </div>
+        <div class="seed-row">
+          <label for="seed-undone">Something you left unfinished</label>
+          <input id="seed-undone" name="undone" type="text" maxlength="48" placeholder="a message you never answered" spellcheck="false">
+        </div>
+        <div class="begin">
+          <button type="submit" class="btn-begin" id="btn-begin">Close your eyes</button>
+          <button type="button" class="btn-quiet" id="btn-silent">or scroll down in silence</button>
+        </div>
+        <p class="fine">Headphones help. What you type stays on this page.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="threshold" data-range="0.34,0.68" data-clock="18,22" style="--h:95">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p class="say">In a few minutes you will lose consciousness.</p>
+      <p>You do this every night, and it has never once struck you as strange.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="threshold" data-range="0.68,1" data-clock="22,25" style="--h:105">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p>The dark behind your eyelids has a name. <em class="term">Eigengrau</em>, &ldquo;own grey&rdquo;: the colour your visual system shows you when it has nothing to look at.</p>
+      <p class="say">From here on, everything you see is made by you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 23:25 · N1 ═══════════════════════════════ -->
+<section class="shot" data-scene="hypnagogia" data-range="0,0.12" data-clock="25,26" style="--h:90">
+  <div class="card-wrap pos-center">
+    <div class="card heading">
+      <p class="eyebrow">23:25 &middot; Stage N1 &middot; sleep onset</p>
+      <h2>The gate closes</h2>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="hypnagogia" data-range="0.12,0.3" data-clock="26,27" style="--h:110">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Deep in the middle of your brain, the thalamus stops passing your senses along. The room is still there. You have stopped receiving it.</p>
+      <p>The visual cortex does not go quiet. With nothing coming in, it starts to draw.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="hypnagogia" data-range="0.3,0.62" data-clock="27,29" style="--h:150">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p class="say">Lattices. Cobwebs. Tunnels. Spirals.</p>
+      <p>Everyone sees the same four families of shape, in every culture that has ever been asked. They are the wiring of the visual cortex, seen from the inside.</p>
+      <p class="note">Heinrich Kl&uuml;ver named them form constants in the 1920s. The mathematics came fifty years later: straight stripes of activity on the cortex look like spirals and tunnels in the eye.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="hypnagogia" data-range="0.62,0.82" data-clock="29,31" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Then the day leaks in. In one experiment, people played a falling-block game for hours. That night, as they drifted off, they saw the blocks falling. So did patients with amnesia, who had no memory of ever having played.</p>
+      <p class="clue"><span class="clue-n">First clue</span>The dream takes its pictures from your recent life. It does not need your permission, or even your memory.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="hypnagogia" data-range="0.82,1" data-clock="31,33" style="--h:100">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p class="say big">And then you fall.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 23:55 · N3 ═══════════════════════════════ -->
+<section class="shot" data-scene="replay" data-range="0,0.1" data-clock="55,57" style="--h:90">
+  <div class="card-wrap pos-center">
+    <div class="card heading">
+      <p class="eyebrow">23:55 &middot; Stage N3 &middot; deep sleep</p>
+      <h2>The day, replayed</h2>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="replay" data-range="0.1,0.24" data-clock="57,63" style="--h:110">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p>Half an hour in, you reach the bottom. Billions of neurons fire together and fall silent together, about once a second.</p>
+      <p>Each wave rolls from the front of your head to the back.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="replay" data-range="0.24,0.45" data-clock="63,72" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Inside every wave, the hippocampus plays back the day. The same neurons fire in the same order, up to twenty times faster than you lived it.</p>
+      <p>Each burst is sent up to the cortex, which slowly takes the memory over.</p>
+      <p class="note">In rats you can read which maze the animal ran from the replay alone.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="replay" data-range="0.45,0.6" data-clock="72,79" style="--h:105">
+  <div class="card-wrap pos-bottom">
+    <div class="card replaying">
+      <p class="eyebrow">Replaying now</p>
+      <p class="traces"><span class="trace" data-seed="person">an old friend</span><span class="trace" data-seed="place">the house you grew up in</span><span class="trace" data-seed="undone">a message you never answered</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="replay" data-range="0.6,0.86" data-clock="79,90" style="--h:125">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p>Not everything gets replayed. While you were awake, some moments were tagged: the ones that scared you, surprised you, or mattered. Those go first.</p>
+      <p class="clue"><span class="clue-n">Second clue</span>What you dream about is chosen by what you felt.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="replay" data-range="0.86,1" data-clock="90,95" style="--h:95">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p>There are dreams down here, but they are short and plain. A thought. A room.</p>
+      <p>The long strange ones need a different kind of sleep.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 00:52 · REM ═══════════════════════════════ -->
+<section class="shot" data-scene="rem" data-range="0,0.06" data-clock="112,113" style="--h:85">
+  <div class="card-wrap pos-center">
+    <div class="card heading">
+      <p class="eyebrow">00:52 &middot; REM sleep &middot; first period</p>
+      <h2>Ignition</h2>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="rem" data-range="0.06,0.17" data-clock="113,115" style="--h:110">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Ninety minutes in, the slow waves stop.</p>
+      <p>At the base of the brain, a knot of cells in the pons begins to fire in bursts. Each burst travels up through the thalamus to the back of the head, where seeing happens.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="rem" data-range="0.17,0.38" data-clock="115,117" style="--h:120">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p>The visual areas light up. So does the amygdala, the brain&rsquo;s centre for alarm and emotion, which now runs up to 30% hotter than when you are awake.</p>
+      <p>Beside it, the hippocampus opens the archive.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="rem" data-range="0.38,0.55" data-clock="117,119" style="--h:120">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>And the front goes dark. The prefrontal cortex checks logic, keeps track of time, and tells you <em>that can&rsquo;t be right</em>. In REM it is switched off.</p>
+      <p class="say">This is why nothing in a dream seems strange.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="rem" data-range="0.55,0.68" data-clock="119,120" style="--h:120">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p>Then the chemistry changes. Noradrenaline, the brain&rsquo;s stress signal, falls to almost nothing. It is the only time in the twenty-four hours that it does.</p>
+      <div class="meters" id="meters" role="img" aria-label="Neurotransmitter levels in REM sleep, relative to waking: acetylcholine high, serotonin and noradrenaline near zero">
+        <div class="meter" data-chem="ach"><span class="m-name">Acetylcholine</span><span class="m-bar"><i></i></span><span class="m-val">0%</span></div>
+        <div class="meter" data-chem="ser"><span class="m-name">Serotonin</span><span class="m-bar"><i></i></span><span class="m-val">0%</span></div>
+        <div class="meter" data-chem="na"><span class="m-name">Noradrenaline</span><span class="m-bar"><i></i></span><span class="m-val">0%</span></div>
+        <p class="m-cap">Relative to waking</p>
+      </div>
+      <p>So you can walk back through the hard parts of your life without setting off the alarm.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="rem" data-range="0.68,0.82" data-clock="120,122" style="--h:115">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Your motor cortex is giving orders. Run. Reach. Speak.</p>
+      <p>The brainstem stops every one of them at the top of the spine. You are paralysed so that you cannot act any of this out.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="rem" data-range="0.82,1" data-clock="122,124" style="--h:115">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <ul class="switches" aria-label="State of the brain in REM sleep">
+        <li class="on"><span>Vision</span><b>on</b></li>
+        <li class="on"><span>Emotion</span><b>on</b></li>
+        <li class="on"><span>Memory</span><b>open</b></li>
+        <li class="off"><span>Logic</span><b>off</b></li>
+        <li class="off"><span>Alarm</span><b>off</b></li>
+        <li class="off"><span>Body</span><b>off</b></li>
+      </ul>
+      <p class="say">Now there is nothing to stop it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 02:25 · REM · THE DREAM ═══════════════════════════════ -->
+<section class="shot" data-scene="dreamscape" data-range="0,0.08" data-clock="205,207" style="--h:95">
+  <div class="card-wrap pos-center">
+    <div class="card heading">
+      <p class="eyebrow">02:25 &middot; REM sleep &middot; second period</p>
+      <h2>And now you are somewhere</h2>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.08,0.2" data-clock="207,212" style="--h:120">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Your brain never waits for the world and then looks at it. It guesses what is out there, and uses your senses to correct the guess.</p>
+      <p>Tonight nothing is correcting it. A dream is what seeing is like with the world taken away.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.2,0.3" data-clock="212,216" style="--h:120">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p class="say">The pieces are yours.</p>
+      <p>This is <span class="seed" data-seed="place">the house you grew up in</span>. <span class="seed" data-seed="person" data-cap>An old friend</span> is here. So is <span class="seed" data-seed="undone">a message you never answered</span>, though it looks nothing like itself.</p>
+      <p class="note">About one dream in fifty replays an event as it happened. Two in three contain pieces of your waking life. The sleeping brain rebuilds; it almost never replays.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.3,0.42" data-clock="216,221" style="--h:120">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Awake, your mind takes the obvious next step. In REM it prefers the distant one. It holds today up against something from fifteen years ago and checks whether they fit.</p>
+      <p>That is why the staircase becomes a spine becomes a bridge. You are watching a search.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.42,0.48" data-clock="221,224" style="--h:105">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p>People who were born blind dream in sound, touch and smell.</p>
+      <p class="clue"><span class="clue-n">Third clue</span>Whatever a life is built from, its dreams are built from too.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.48,0.55" data-clock="224,228" style="--h:125">
+  <div class="card-wrap pos-bottom">
+    <div class="card">
+      <p class="say">The horizon is folding over your head. It seems perfectly reasonable.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 03:57 · REM · THE NIGHTMARE ═══════════════════════════════ -->
+<section class="shot" data-scene="dreamscape" data-range="0.55,0.6" data-clock="297,299" data-accent="#ff4d6a" style="--h:90">
+  <div class="card-wrap pos-center">
+    <div class="card heading">
+      <p class="eyebrow">03:57 &middot; REM sleep &middot; third period</p>
+      <h2>Then it turns</h2>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.6,0.68" data-clock="299,306" data-accent="#ff4d6a" style="--h:115">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Most of the feeling in dreams is bad. Fear and worry outnumber joy in every large collection of dream reports ever gathered.</p>
+      <p>The single most common dream on Earth is being chased.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.68,0.76" data-clock="306,314" data-accent="#ff4d6a" style="--h:115">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p>What follows you is usually something of your own. <span class="seed" data-seed="undone" data-cap>A message you never answered</span>, grown enormous, somewhere behind you.</p>
+      <p class="note">After being chased come falling, arriving late, sitting an exam you never studied for, and teeth coming loose. The list is nearly the same in every country.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.76,0.84" data-clock="314,321" data-accent="#ff4d6a" style="--h:115">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>One explanation is that this is practice. For most of human history the things chasing us were real, and a brain that rehearsed its escape at night did better by day.</p>
+      <p class="clue"><span class="clue-n">Fourth clue</span>You dream your fears because a dream is a safe place to meet them.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.84,0.94" data-clock="321,327" data-accent="#ff4d6a" style="--h:105">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p class="say big">And then the ground is not there.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dreamscape" data-range="0.94,1" data-clock="327,330" style="--h:85">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p class="say">You never land.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 04:35 · N2 · OTHER MINDS ═══════════════════════════════ -->
+<section class="shot" data-scene="octopus" data-range="0,0.14" data-clock="335,338" style="--h:90">
+  <div class="card-wrap pos-center">
+    <div class="card heading">
+      <p class="eyebrow">04:35 &middot; Stage N2 &middot; between dreams</p>
+      <h2>Not only us</h2>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="octopus" data-range="0.14,0.32" data-clock="338,345" style="--h:105">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>Rats run the day&rsquo;s maze again in their sleep, neuron for neuron. Zebra finches rehearse their songs without making a sound.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="octopus" data-range="0.32,0.62" data-clock="345,356" style="--h:135">
+  <div class="card-wrap pos-right">
+    <div class="card">
+      <p class="say">And a sleeping octopus does this.</p>
+      <p>About once an hour its skin runs through the patterns it wears when it is awake: hunting, hiding, warning. Its brain, for that minute, looks awake too.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="octopus" data-range="0.62,0.86" data-clock="356,364" style="--h:120">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p>The last ancestor we share with an octopus lived more than 500 million years ago and had almost no brain at all.</p>
+      <p>So either dreaming is very old, or evolution built it twice. Nothing this costly is kept by accident.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="octopus" data-range="0.86,1" data-clock="364,368" style="--h:70" aria-hidden="true"></section>
+
+<!-- ═══════════════════════════════ 05:12 · REM · THE THEORIES ═══════════════════════════════ -->
+<section class="shot" data-scene="theories" data-range="0,0.1" data-clock="372,375" style="--h:105">
+  <div class="card-wrap pos-center">
+    <div class="card heading">
+      <p class="eyebrow">05:12 &middot; REM sleep &middot; fourth period</p>
+      <h2>So what is it for?</h2>
+      <p class="sub">Nobody knows for certain. These are the seven best ideas.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot theory" data-scene="theories" data-range="0.1,0.22" data-clock="375,380" data-accent="#4fd6d0" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p class="eyebrow">Memory consolidation</p>
+      <h3>To keep</h3>
+      <p>Sleep is when the day gets filed. Replay moves new memories out of the hippocampus and weaves them into everything you already know. Dreaming may be what that feels like from inside.</p>
+      <p class="note">People who dreamed about a maze they had just learned got ten times better at it than people who did not.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot theory" data-scene="theories" data-range="0.22,0.34" data-clock="380,385" data-accent="#ff7eb6" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p class="eyebrow">Emotional processing</p>
+      <h3>To heal</h3>
+      <p>REM replays the hard memories with the stress chemistry switched off. Each night takes a little more of the edge away. You keep what happened and lose some of how much it hurt.</p>
+      <p class="note">Among people going through a divorce, the ones who dreamed about it were the ones who had recovered a year later.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot theory" data-scene="theories" data-range="0.34,0.46" data-clock="385,390" data-accent="#ff7a4d" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p class="eyebrow">Threat simulation</p>
+      <h3>To rehearse</h3>
+      <p>A dream is a simulator in which being chased costs nothing. You practise fear at night so that you are faster with it in the day.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot theory" data-scene="theories" data-range="0.46,0.58" data-clock="390,395" data-accent="#ffc27a" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p class="eyebrow">The overfitted brain</p>
+      <h3>To generalise</h3>
+      <p>Your days repeat. A brain that learned only from them would memorise its life instead of understanding it. So every night it feeds itself warped, improbable versions.</p>
+      <p>On this view the strangeness is the purpose.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot theory" data-scene="theories" data-range="0.58,0.7" data-clock="395,400" data-accent="#6fe3a5" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p class="eyebrow">Network exploration</p>
+      <h3>To explore</h3>
+      <p>The sleeping brain takes a new memory and goes looking for its distant relatives. What else is like this? Most of the links it finds are useless. A few are the idea you wake up with.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot theory" data-scene="theories" data-range="0.7,0.82" data-clock="400,405" data-accent="#a48bff" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p class="eyebrow">Defensive activation</p>
+      <h3>To defend</h3>
+      <p>Brain territory that falls idle starts being taken over by its neighbours within hours. Vision is the one sense the night switches off. Dreams may be how the visual cortex holds its ground until morning.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot theory" data-scene="theories" data-range="0.82,0.94" data-clock="405,410" data-accent="#dfe4f5" style="--h:125">
+  <div class="card-wrap pos-left">
+    <div class="card">
+      <p class="eyebrow">Activation-synthesis</p>
+      <h3>Or for no reason</h3>
+      <p>The brainstem fires at random. The cortex, which cannot stop making sense of things, makes a story out of the noise.</p>
+      <p>Even if this is right, the story is still assembled from you.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="theories" data-range="0.94,1" data-clock="410,415" style="--h:150">
+  <div class="card-wrap pos-bottom">
+    <div class="card">
+      <p>Nobody has managed to rule any of them out.</p>
+      <p class="say">A hand is for holding, pointing and waving. Dreaming may be for all seven.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 06:12 · REM → WAKE ═══════════════════════════════ -->
+<section class="shot" data-scene="dawn" data-range="0,0.12" data-clock="432,446" data-accent="#ffb88a" style="--h:100">
+  <div class="card-wrap pos-center">
+    <div class="card heading">
+      <p class="eyebrow">06:12 &middot; REM sleep &middot; fifth and last period</p>
+      <h2>Morning</h2>
+      <p class="sub">The last dream of the night is the longest and the strangest. It is the one you might remember.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dawn" data-range="0.12,0.25" data-clock="446,460" data-accent="#ffb88a" style="--h:110">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p class="say">Might.</p>
+      <p>The same chemistry that let you dream without fear also left the recorder switched off. Noradrenaline comes back within moments of waking. By then most of the dream has already gone.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dawn" data-range="0.25,0.5" data-clock="460,470" data-accent="#ffb88a" style="--h:125">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p>Light, through your eyelids.</p>
+      <p class="say big">So, once more. Why do we dream <em>what</em> we dream?</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dawn" data-range="0.5,0.7" data-clock="470,472" data-accent="#ffb88a" style="--h:230">
+  <div class="card-wrap pos-center">
+    <div class="card answer" id="answer">
+      <p class="because step" data-at="0.10">Because of what happened to you.</p>
+      <p class="because step" data-at="0.27">Because of what you felt about it.</p>
+      <p class="because step" data-at="0.44">Because of everything your life has been built from.</p>
+      <p class="because step" data-at="0.61">Because of what you are afraid of, and what you are still waiting for.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dawn" data-range="0.7,0.82" data-clock="472,473" data-accent="#ffb88a" style="--h:140">
+  <div class="card-wrap pos-center">
+    <div class="card wide">
+      <p>Every night your brain takes the newest pieces of your life, picks out the ones with the most feeling on them, and holds each one up against everything you have ever known, looking for where it fits.</p>
+      <p>It does this with logic switched off and fear turned down, so that it can try combinations you would never allow yourself awake. You experience the search as a story.</p>
+      <p class="say">It is built from a set of memories that nobody else has. It will never be built the same way twice.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dawn" data-range="0.82,0.9" data-clock="473,474" data-accent="#ffb88a" style="--h:120">
+  <div class="card-wrap pos-center">
+    <div class="card">
+      <p>You will spend about six years of your life in there. You will remember almost none of it.</p>
+      <p class="say">It was still you.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shot" data-scene="dawn" data-range="0.9,0.97" data-clock="474,474" data-accent="#ffb88a" style="--h:150">
+  <div class="card-wrap pos-center">
+    <div class="card forecast" id="forecast">
+      <p class="eyebrow">Forecast for tonight &middot; fifth REM period, around <span id="forecast-time">06:20</span></p>
+      <p class="forecast-text" id="forecast-text" aria-live="polite">It starts in the house you grew up in, except the ceiling is much too high and one wall is water.</p>
+      <p class="note" id="forecast-note">Assembled from the three things you left at the start, the way your brain will assemble it: recent, felt, unfinished.</p>
+      <div class="forecast-actions">
+        <button type="button" class="btn-ghost" id="btn-redream">Dream it again</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="shot flow last" data-scene="dawn" data-range="0.97,1" data-clock="474,474" data-accent="#ffb88a" style="--h:100">
+  <div class="card-wrap pos-center">
+    <div class="card wide colophon">
+      <p class="say big">Sleep well.</p>
+      <p><button type="button" class="btn-ghost" id="btn-restart">Start the night again</button></p>
+      <details class="sources">
+        <summary>Where this comes from</summary>
+        <ul>
+          <li>Hypnagogic replay of a falling-block game, including in amnesia: Stickgold et&nbsp;al., <cite>Science</cite>, 2000.</li>
+          <li>Form constants and the geometry of visual cortex: Kl&uuml;ver, 1926; Ermentrout &amp; Cowan, 1979; Bressloff et&nbsp;al., 2001.</li>
+          <li>Slow oscillations as travelling waves: Massimini et&nbsp;al., <cite>J. Neuroscience</cite>, 2004.</li>
+          <li>Hippocampal replay in sleep: Wilson &amp; McNaughton, <cite>Science</cite>, 1994; Louie &amp; Wilson, <cite>Neuron</cite>, 2001.</li>
+          <li>Brain activity in REM (limbic activation, prefrontal deactivation): Maquet et&nbsp;al., <cite>Nature</cite>, 1996; Braun et&nbsp;al., <cite>Brain</cite>, 1997.</li>
+          <li>Noradrenaline and overnight emotional processing: Walker &amp; van der Helm, <cite>Psychological Bulletin</cite>, 2009.</li>
+          <li>Dreams rarely replay episodes: Fosse et&nbsp;al., <cite>J. Cognitive Neuroscience</cite>, 2003.</li>
+          <li>Weak associations favoured in REM: Stickgold et&nbsp;al., <cite>J. Cognitive Neuroscience</cite>, 1999.</li>
+          <li>Dreams of people blind from birth: Meaidi et&nbsp;al., <cite>Sleep Medicine</cite>, 2014.</li>
+          <li>Typical dream themes across populations: Nielsen et&nbsp;al., <cite>Dreaming</cite>, 2003.</li>
+          <li>Threat simulation: Revonsuo, <cite>Behavioral and Brain Sciences</cite>, 2000.</li>
+          <li>Dreaming of a learning task improves it: Wamsley et&nbsp;al., <cite>Current Biology</cite>, 2010.</li>
+          <li>Dreams and recovery after divorce: Cartwright et&nbsp;al., <cite>Psychiatry Research</cite>, 1998, 2006.</li>
+          <li>The overfitted brain: Hoel, <cite>Patterns</cite>, 2021.</li>
+          <li>NEXTUP: Zadra &amp; Stickgold, <cite>When Brains Dream</cite>, 2021.</li>
+          <li>Defensive activation: Eagleman &amp; Vaughn, <cite>Frontiers in Neuroscience</cite>, 2021.</li>
+          <li>Activation-synthesis: Hobson &amp; McCarley, <cite>American J. Psychiatry</cite>, 1977.</li>
+          <li>Song replay in sleeping finches: Dave &amp; Margoliash, <cite>Science</cite>, 2000.</li>
+          <li>Active sleep in octopuses: Medeiros et&nbsp;al., <cite>iScience</cite>, 2021; Pophale et&nbsp;al., <cite>Nature</cite>, 2023.</li>
+        </ul>
+        <p class="note">Every image and sound on this page is computed in your browser as you watch. There are no pictures, videos or recordings in it.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<noscript><p class="noscript">This is an interactive piece and needs JavaScript and WebGL to run.</p></noscript>
+
+<script src="js/glsl.js"></script>
+<script src="js/core.js"></script>
+<script src="js/scenes/threshold.js"></script>
+<script src="js/scenes/hypnagogia.js"></script>
+<script src="js/scenes/brain.js"></script>
+<script src="js/scenes/dreamscape.js"></script>
+<script src="js/scenes/octopus.js"></script>
+<script src="js/scenes/theories.js"></script>
+<script src="js/scenes/dawn.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
