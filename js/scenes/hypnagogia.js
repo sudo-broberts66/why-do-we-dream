@@ -40,12 +40,12 @@ vec3 phosphenes(vec2 uv, float t, float swirl, out float blob){
   vec2 w = vec2(fbm3(q + vec2(0., t * .032)), fbm3(q * 1.13 + vec2(4.7, -t * .027)));
   float f = fbm4(q * .85 + 2.4 * (w - .5) + vec2(t * .011, 3.1));
   blob = ss(.42, .70, f);
-  float rim = exp(-pow((f - .455) / .028, 2.));          // organic, slightly brighter edge
+  float rim = exp(-pow((f - .455) / .022, 2.));          // organic, slightly brighter edge
   float core = ss(.62, .86, f);
   float haze = ss(.25, .8, w.y);
   vec3 c = vec3(.050, .030, .190) * blob;
   c += vec3(.300, .240, .640) * blob * blob * .42;
-  c += vec3(.560, .480, 1.00) * (rim * .085 + core * .22);
+  c += vec3(.560, .480, 1.00) * (rim * .13 + core * .24);
   c += vec3(.020, .030, .110) * haze * haze;               // a second, larger and bluer cloud
   c += vec3(.170, .050, .200) * ss(.6, .95, w.x) * blob * .5; // warm magenta pockets
   return c * (.5 + .5 * ss(.02, .45, r));
@@ -112,12 +112,12 @@ vec3 formLayer(vec2 pp, float li, float n, float p, float t, float tw, float wMu
   // iso-activity contours, one per unit of u, the one at 'lvl' is the main filament
   float v = u - lvl;
   float inv = r / g;                                          // cortex -> screen distance scale
-  vec3 vc = v - vec3(-1., 0., 1.) * (.045 + .03 * li);        // per-channel level offset: thin-film fringes
+  vec3 vc = v - vec3(-1., 0., 1.) * (.030 - .009 * li);        // per-channel level offset: thin-film fringes
   vec3 d = abs(fract(vc + .5) - .5) * inv;
   float w = max((.0011 + .0042 * r) * wMul, .85 * px);
   vec3 line = exp(-(d * d) / (w * w));
   float halo = .10 / (1. + pow(d.g / (4.5 * w), 2.));
-  float mainW = mix(.26, 1., exp(-v * v * 7.));
+  float mainW = mix(.17, 1., exp(-v * v * 7.));
 
   // depth cues: fog down the centre, aliasing guard, slow activity pulses travelling outward
   float dens = 1.2 * n / r * px;
@@ -245,9 +245,12 @@ void main(){
   /* 1. Eigengrau: where the previous scene left off */
   float eig = 1. - ss(.03, .22, p);
   if (eig > 0.){
-    float crawl = vnoise(vec3(uv * 70., t * 1.3)) - .5;
-    float slow = fbm3(uv * 2.2 + vec2(t * .02, -t * .015));
-    col += vec3(.013, .013, .019) * eig * (.8 + .5 * slow + .5 * crawl);
+    // same recipe as the end of 'threshold', so the hand-over is seamless
+    float n1 = fbm(uv * 2.1 + vec2(t * .030, -t * .021));
+    float n2 = snoise(vec3(uv * 13., t * .22));
+    float n3 = snoise(vec3(uv * 47., t * .55));
+    float gE = .041 + .026 * (n1 - .5) + .0055 * n2 + .0040 * n3;
+    col += vec3(gE * .94, gE * .95, gE * 1.24) * eig;
   }
 
   /* 2. phosphenes */
@@ -270,7 +273,7 @@ void main(){
     vec3 geo = vec3(0.);
     geo += formLayer(fuv - drop - ptr * .10, 0., 12., p, t, tw, 1. + 1.6 * recede, px);
     geo += formLayer(fuv - drop - ptr * .045, 1., 12., p - .012, t, tw, 1.8 + 2.2 * recede, px) * .40;
-    geo += formLayer(fuv - drop + ptr * .03, 2., 6., p - .024, t, tw, 3.0 + 3. * recede, px) * .30;
+    geo += formLayer(fuv - drop + ptr * .03, 2., 6., p - .024, t, tw, 2.2 + 3. * recede, px) * .24;
     col += geo * geoA * mask * mix(1., .34, recede) * (1. + .8 * jerk);
   }
 
@@ -298,7 +301,7 @@ void main(){
     float deep = ss(.86, 1., p);
     float murk = fbm3(uv * 1.6 + vec2(0., t * .02));
     col += vec3(.0025, .012, .017) * deep * (.7 + .6 * murk);
-    col += vec3(.020, .075, .085) * exp(-r * r * 7.5) * ss(.90, 1., p);
+    col += vec3(.010, .070, .088) * exp(-r * r * 7.5) * ss(.90, 1., p);
     col += vec3(.45, .85, .9) * sparks(uv + vec2(0., -t * .012), t * .6, 19., .09) * .22 * ss(.93, 1., p);
   }
 

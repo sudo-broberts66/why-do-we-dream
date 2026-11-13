@@ -524,8 +524,8 @@ void main(){
     float pf = aB.x, mo = aB.y, vis = aB.z;
     float up = slowUp(aPos);
     float I = bright * twk;
-    col = base * I * .42 * mix(1., .16 + 2.1 * up, slow);
-    col += CREST * I * up * up * slow * .5;
+    col = base * I * 1.05 * mix(1., .28 + 1.75 * up, slow);
+    col += CREST * I * up * up * slow * .55;
     col *= 1. - .5 * tag * (1. - aC.z) * (1. - warm * .6);            // the untagged majority dims
     float gd = aC.w * smoothstep(0., .35, tag);
     col += mix(vec3(.45, .95, 1.), GOLD * 1.25, gd) * landing(aC.x, aC.w) * aC.y * replay * 1.5 * (.5 + .5 * bright);
@@ -541,12 +541,12 @@ void main(){
     size = .0105 * (.75 + .5 * s2);
     facingAmt = 1.;
   } else if(reg < 1.5){                                              // ---------------- cerebellum
-    col = base * bright * twk * .34 * mix(1., .7 + .5 * slowUp(aPos), slow * .5);
+    col = base * bright * twk * .8 * mix(1., .7 + .5 * slowUp(aPos), slow * .5);
     col += base * bright * ach * .12 * fl;
     size = .009; facingAmt = 1.;
   } else if(reg < 2.5){                                              // ---------------- brainstem
     float s = aB.x, pw = aB.y, core = 1. - aB.z;
-    col = base * bright * twk * .36;
+    col = base * bright * twk * .7;
     // pons ignites: rose-white core, PGO volleys climbing toward the midbrain
     float climb = pAct * exp(-pow((s - (.5 - pU * 1.6)) / .09, 2.)) * step(s, .55);
     col += mix(ROSE, vec3(1., .9, .93), .25 + .6 * core) * bright * pons * (pw * (1.0 + 1.5 * pgoPons * pgo + .5 * fl) + climb * pgo * 1.3);
@@ -578,7 +578,7 @@ void main(){
     col += mix(ROSE, vec3(1., .62, .55), .4) * bright * limbic * (.9 + 2.6 * fl);
     size = .0095;
   } else if(reg < 6.5){                                              // ---------------- spinal cord
-    col = base * bright * twk * .34 * (1. - .86 * motor);
+    col = base * bright * twk * .7 * (1. - .88 * motor);
     size = .009; facingAmt = .6;
   } else if(reg < 7.5){                                              // ---------------- fornix
     float burst = smoothstep(0., .04, gRU) * (1. - smoothstep(.1, .4, gRU));
@@ -676,7 +676,7 @@ void main(){
   float depth = -vp.z;
   vec3 vd = normalize(uEye - pos);
   float ndv = dot(aNrm, vd);
-  float fc = mix(.17, 1., smoothstep(-.3, .4, ndv)) * (1. + 1.25 * pow(1. - abs(ndv), 3.));
+  float fc = mix(.11, 1., smoothstep(-.3, .45, ndv)) * (1. + .55 * pow(1. - abs(ndv), 3.));
   col *= mix(1., fc, facingAmt);
   col *= clamp(1. - (depth - uK4.x) * .4, .3, 1.4);                  // nearer is brighter
   col *= smoothstep(.03, .25, depth);

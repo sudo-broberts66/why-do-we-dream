@@ -125,12 +125,12 @@ body {
 .theory h3 { font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(2.9rem, 6vw, 4.6rem); line-height: 1; margin: 0 0 .35em; color: var(--accent); }
 
 /* hero */
-.hero .card-wrap { padding-top: 104px; }
+.hero .card-wrap { padding-top: 84px; padding-bottom: 28px; }
 .hero-card { max-width: 62rem; }
 .hero-card::before { inset: -3rem -3rem; background: radial-gradient(ellipse at center, rgba(var(--scrim), .5) 0%, rgba(var(--scrim), .3) 50%, rgba(var(--scrim), 0) 75%); }
-.title { font-family: var(--display); font-weight: 300; font-size: clamp(3.1rem, 10.4vw, 8.6rem); line-height: .92; letter-spacing: -.018em; margin: 0 0 .32em; text-wrap: balance; }
+.title { font-family: var(--display); font-weight: 300; font-size: clamp(3.1rem, min(10.4vw, 16vh), 8.6rem); line-height: .92; letter-spacing: -.018em; margin: 0 0 .32em; text-wrap: balance; }
 .title em { font-style: italic; font-weight: 400; color: var(--accent); }
-.lede { font-family: var(--display); font-size: clamp(1.25rem, 2.1vw, 1.6rem); line-height: 1.32; color: var(--ink-dim); max-width: 33em; margin: 0 auto 2.2em !important; text-wrap: pretty; }
+.lede { font-family: var(--display); font-size: clamp(1.2rem, min(2.1vw, 3.4vh), 1.6rem); line-height: 1.32; color: var(--ink-dim); max-width: 33em; margin: 0 auto 1.7em !important; text-wrap: pretty; }
 .seeds { max-width: 52rem; margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 28px; text-align: left; }
 .seeds-ask, .begin, .fine { grid-column: 1 / -1; text-align: center; }
 .seeds-ask { font-size: .98rem; color: var(--ink); margin: 0 0 .2em !important; }

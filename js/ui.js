@@ -187,6 +187,7 @@
       if (sh._bound) return;
       sh._bound = true;
       sh.wrap = sh.el.querySelector('.card-wrap');
+      sh.card = sh.wrap && sh.wrap.querySelector('.card');
       sh.flow = sh.el.classList.contains('flow');
       sh.first = i === 0; sh.last = i === shots.length - 1;
       sh.steps = $$('.step', sh.el).map((el) => ({ el, at: parseFloat(el.dataset.at) || 0, on: false }));
@@ -262,17 +263,31 @@
   function updateLabels(act) {
     const brain = D.brain;
     const wide = window.innerWidth > 760;
+    let rects = null; // rectangles of the narration cards currently on screen, measured only if a label needs them
+    const cardRects = () => {
+      if (rects) return rects;
+      rects = [];
+      for (const sh of shots) if (sh.v > 0.05 && sh.card) rects.push(sh.card.getBoundingClientRect());
+      return rects;
+    };
     for (const l of LABELS) {
       const a = act[l.scene];
-      let o = 0, pos = null;
+      let o = 0, pos = null, flip = false, px = 0, py = 0;
       if (wide && brain && brain.project && a && a.fade > 0.85 && a.progress >= l.a && a.progress <= l.b) {
         try { pos = brain.project(l.name); } catch (e) { pos = null; }
-        if (pos && pos.visible !== false && pos.x > 0.04 && pos.x < 0.96 && pos.y > 0.12 && pos.y < 0.94) o = 1;
+        if (pos && pos.visible !== false && pos.x > 0.04 && pos.x < 0.96 && pos.y > 0.12 && pos.y < 0.94) {
+          o = 1;
+          px = pos.x * window.innerWidth; py = pos.y * window.innerHeight;
+          const w = 52 + l.text.length * 8.2; // dot + leader + text, roughly
+          // lead away from the narration card; hide if there is no clear side
+          const clear = (x0, x1) => cardRects().every((r) => x1 < r.left - 14 || x0 > r.right + 14 || py + 12 < r.top - 10 || py - 12 > r.bottom + 10);
+          const right = clear(px, px + w) && px + w < window.innerWidth - 12;
+          const left = clear(px - w, px) && px - w > 12;
+          if (right && left) flip = pos.x < 0.5; else if (left) flip = true; else if (right) flip = false; else o = 0;
+        }
       }
       if (o) {
-        const flip = pos.x < 0.5;
         l.el.classList.toggle('flip', flip);
-        const px = pos.x * window.innerWidth, py = pos.y * window.innerHeight;
         l.el.style.transform = flip
           ? `translate3d(${px.toFixed(1)}px,${py.toFixed(1)}px,0) translate(-100%,-50%)`
           : `translate3d(${px.toFixed(1)}px,${py.toFixed(1)}px,0) translate(0,-50%)`;

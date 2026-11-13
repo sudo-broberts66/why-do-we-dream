@@ -13,7 +13,7 @@
 const vec2  POLE    = vec2(.45, -1.5);   // centre of the sky's rotation, far below the horizon (we face south)
 const float BAND_R  = 1.9;               // the Milky Way is an arc about POLE, so rotation never moves it off-frame
 const float HORIZON = -.405;
-const float MOON_R  = .030;
+const float MOON_R  = .037;
 const float SUN_R   = .021;
 float gAsp;                              // aspect ratio, set in main()
 
@@ -43,10 +43,10 @@ vec3 starField(vec2 q, float scale, float seed, float r0, float dens, float blur
   vec2 h = hash22(id + seed);
   vec2 c = .5 + (h - .5) * .72;
   float d = length(f - c) / scale;
-  float mag = pow(k.y, 5.);
+  float mag = pow(k.y, 6.);
   float ru = r0 * (.75 + .9 * mag);
   float r = max(ru, .8 / uRes.y) + blur;
-  float I = (.20 + 1.7 * mag) * min(1., ru * ru / (r * r));
+  float I = (.085 + 2.0 * mag) * min(1., ru * ru / (r * r));
   I *= 1. - tw * (.5 + .5 * sin(uTime * (1.1 + 3.6 * h.x) + h.y * 60.));
   return starTint(fract(k.y * 37.3 + h.x)) * I * exp(-d * d / (r * r));
 }
@@ -95,7 +95,7 @@ vec3 milkyWay(vec2 q, vec2 rel, float blur, out float dens){
   float aS = atan(rel.x, rel.y);
   float aB = (-.27 * gAsp - POLE.x) / BAND_R;
   float bulge = exp(-(aS - aB) * (aS - aB) / .030);
-  float w = .078 + .062 * bulge;
+  float w = .092 + .075 * bulge;
   float env = exp(-v * v / (w * w));
   dens = 0.;
   if (env < .004) return vec3(0.);
@@ -109,7 +109,7 @@ vec3 milkyWay(vec2 q, vec2 rel, float blur, out float dens){
   c += vec3(.50, .30, .22) * bulge * smoothstep(.2, 1.2, dens);
   float spots = smoothstep(.70, .92, vnoise(bp * vec2(8., 13.) + 50.)) * (1. - blur);
   c += vec3(.75, .22, .42) * spots * .35;
-  return c * dens * .155;
+  return c * dens * .36;
 }
 
 // The whole sky. dawn: 0 = deep night … 1 = sun on the ridge. moonT: see moonPos. blur: 0 sharp … 1 defocused.
@@ -128,14 +128,14 @@ vec3 sky(vec2 uv, float dawn, float moonT, float blur){
   float off = abs(uv.x - sx) / max(gAsp, .8);
   float ee = max(e, 0.) * (1. + .75 * smoothstep(0., 1.1, off) * dv);
   vec3 Z = mix(vec3(.009, .011, .030), vec3(.026, .034, .100), dawn);
-  vec3 H = mix(vec3(.030, .037, .080), vec3(.170, .110, .285), dv);
+  vec3 H = mix(vec3(.040, .049, .104), vec3(.170, .110, .285), dv);
   vec3 col = mix(Z, H, exp(-ee / mix(.20, .40, dv)));
   col += vec3(.010, .026, .030) * exp(-ee / .07) * (1. - dv);                 // airglow
   col = mix(col, vec3(.70, .27, .37), dr * .92 * exp(-ee / .185));              // rose
   col = mix(col, vec3(1.02, .60, .40), dp * exp(-ee / .092));                   // peach
   col = mix(col, vec3(1.10, .87, .57), dg * exp(-ee / .040));                   // pale gold
   float dm = length(uv - mp);
-  col += vec3(.81, .78, 1.) * (.050 * exp(-dm / .30) + .060 * exp(-dm / .075)) * (1. - .85 * dv); // moon haze
+  col += vec3(.81, .78, 1.) * (.060 * exp(-dm / .30) + .110 * exp(-dm / .080)) * (1. - .85 * dv); // moon haze
   col += vec3(1., .52, .24) * smoothstep(.45, 1., dawn) * .30
        * exp(-length((uv - vec2(sx, HORIZON)) * vec2(.5, 1.25)) / .15);
 
@@ -153,11 +153,10 @@ vec3 sky(vec2 uv, float dawn, float moonT, float blur){
     st += starField(R * (rel + pp * .003), 88., 0., .0011, .26 + .74 * md, blur * .014, .22) * sv;
     st += starField(R * (rel + pp * .006), 41., 31., .0015, .42 + .45 * md, blur * .016, .28) * sv;
   }
-  st += starField(R * (uv - POLE + pp * .010), 17., 67., .0021, .70, blur * .018, .34) * mix(sv, bv, .6);
+  st += starField(R * (uv - POLE + pp * .010), 17., 67., .0021, .55, blur * .018, .34) * mix(sv, bv, .6);
   st += brightStars(R * (uv - POLE + pp * .015), blur, 0.) * bv;
   st *= ext * clamp(1. - 2.6 * lum(col) * dv, 0., 1.);
   st *= 1. - .38 * exp(-dot(uv / vec2(.36 * gAsp + .12, .17), uv / vec2(.36 * gAsp + .12, .17)));  // calm centre
-  st *= 1. - .5 * blur * (1. - smoothstep(0., .2, dawn) * .0);
 
   // ---- crescent moon (lit limb toward the sun, below the horizon to the lower left), earthshine
   vec2 md2 = rot(-.95) * (uv - mp) / MOON_R;
@@ -174,7 +173,6 @@ vec3 sky(vec2 uv, float dawn, float moonT, float blur){
   st *= 1. - mdisc;
   col += st;
   col = mix(col, col + moonC, 1. - .35 * dv * (1. - lit));
-  col += moonC * 0.;
 
   // ---- high cloud on a receding plane: moonlit wisps by night, lit from below at dawn
   float z = .2 / (max(e, 0.) + .04);
@@ -186,13 +184,13 @@ vec3 sky(vec2 uv, float dawn, float moonT, float blur){
     vec2 uv2 = uv + normalize(L - uv + 1e-4) * .022;
     float z2 = .2 / (max(uv2.y - HORIZON, 0.) + .04);
     float cn2 = fbm(vec2((uv2.x + pp.x * .010) * z2 + uTime * .0035, z2) * vec2(.5, 2.0) + vec2(0., 3.));
-    float cover = mix(.57, .46, dv);
+    float cover = mix(.52, .46, dv);
     float cd = smoothstep(cover, cover + .27, cn) * cenv;
     cd = mix(cd, cenv * .22, blur);
     float edge = smoothstep(0., .22, cn - cn2) * (1. - blur * .7);
     float thin = cd * (1. - cd) * 4.;
     // night
-    vec3 nightC = vec3(.81, .78, 1.) * (.022 + .42 * exp(-dm * 4.2)) * (.35 + edge * .9 + thin * .25);
+    vec3 nightC = vec3(.81, .78, 1.) * (.040 + .50 * exp(-dm * 3.6)) * (.35 + edge * .9 + thin * .25);
     // dawn
     float far = smoothstep(.45, 2.6, z);
     float az = exp(-off * off * 2.2);
@@ -237,8 +235,8 @@ const float LID_MEET = -.17;   // where the lids meet: below centre, because the
 float lids(vec2 uv, float open, out float rim){
   float xn = uv.x / (.5 * gAsp);
   float x2 = xn * xn;
-  float T  = mix(LID_MEET - .10, 1.22, open);
-  float B  = mix(LID_MEET, -.95, pow(open, .85));
+  float T  = mix(LID_MEET - .10, 1.22, pow(open, 1.6));
+  float B  = mix(LID_MEET, -.95, pow(open, 1.3));
   float kT = mix(.085, -.43, smoothstep(0., .75, open));
   float kB = mix(.085, .21, open);
   float dT = T + kT * x2 - uv.y;          // > 0 below the upper margin
@@ -301,7 +299,7 @@ void main(){
       float ghostM = cres + .25 * exp(-dot(md, md) * .03);
       vec3 ghostS = brightStars(rot(-uTime * .0022 - .30) * (auv - POLE), 0., 1.);
       float breathe = .8 + .2 * sin(uTime * .6);
-      lid += (vec3(.60, .58, .82) * ghostM * .16 + (vec3(1.05) - ghostS) * 0.) * uAfter.x;
+      lid += vec3(.60, .58, .82) * ghostM * .16 * uAfter.x;
       lid += (vec3(.34, .30, .02) * ghostM * .15 + ghostS * .055) * uAfter.y * breathe;
     }
     col = mix(lid, col, ap);
@@ -320,7 +318,7 @@ void main(){
       const ss = D.util.smoothstep, cl = D.util.clamp;
       const p = s.progress, t = s.time;
       // one slow blink that reopens a little, then closed for good
-      let open = 1 - 0.90 * ss(0.42, 0.60, p) + 0.32 * ss(0.60, 0.70, p) - 0.42 * ss(0.70, 0.88, p);
+      let open = 1 - 0.82 * ss(0.42, 0.60, p) + 0.34 * ss(0.60, 0.70, p) - 0.52 * ss(0.70, 0.88, p);
       open += 0.05 * Math.sin(t * 1.3) * Math.sin(t * 0.37 + 1) * open * (1 - open);   // heavy lids tremble
       open = cl(open, 0, 1);
       const defocus = cl(0.80 * ss(0.44, 0.61, p) - 0.38 * ss(0.61, 0.70, p) + 0.58 * ss(0.70, 0.86, p), 0, 1);
