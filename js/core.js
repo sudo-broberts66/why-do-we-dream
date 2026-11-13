@@ -131,12 +131,12 @@
       // bright-pass + first downsample
       pre: util.fullscreen(h + `
 void main(){
-  vec2 uv = gl_FragCoord.xy * uTexel * 0.5;
+  vec2 uv = gl_FragCoord.xy * uTexel;          // uTexel = destination texel (source is 2x larger)
   vec3 c = vec3(0.);
-  c += texture(uTex, uv + uTexel * vec2(-1., -1.)).rgb;
-  c += texture(uTex, uv + uTexel * vec2( 1., -1.)).rgb;
-  c += texture(uTex, uv + uTexel * vec2(-1.,  1.)).rgb;
-  c += texture(uTex, uv + uTexel * vec2( 1.,  1.)).rgb;
+  c += texture(uTex, uv + uTexel * vec2(-.5, -.5)).rgb;
+  c += texture(uTex, uv + uTexel * vec2( .5, -.5)).rgb;
+  c += texture(uTex, uv + uTexel * vec2(-.5,  .5)).rgb;
+  c += texture(uTex, uv + uTexel * vec2( .5,  .5)).rgb;
   c *= 0.25;
   c = min(c, vec3(12.));
   float l = max(c.r, max(c.g, c.b));
@@ -145,12 +145,12 @@ void main(){
 }`, 'post.pre'),
       down: util.fullscreen(h + `
 void main(){
-  vec2 uv = gl_FragCoord.xy * uTexel * 0.5;   // uTexel = source texel
+  vec2 uv = gl_FragCoord.xy * uTexel;          // uTexel = destination texel
   vec3 c = texture(uTex, uv).rgb * 4.;
-  c += texture(uTex, uv + uTexel * vec2(-1., -1.)).rgb;
-  c += texture(uTex, uv + uTexel * vec2( 1., -1.)).rgb;
-  c += texture(uTex, uv + uTexel * vec2(-1.,  1.)).rgb;
-  c += texture(uTex, uv + uTexel * vec2( 1.,  1.)).rgb;
+  c += texture(uTex, uv + uTexel * vec2(-.5, -.5)).rgb;
+  c += texture(uTex, uv + uTexel * vec2( .5, -.5)).rgb;
+  c += texture(uTex, uv + uTexel * vec2(-.5,  .5)).rgb;
+  c += texture(uTex, uv + uTexel * vec2( .5,  .5)).rgb;
   fragColor = vec4(c / 8., 1.);
 }`, 'post.down'),
       up: util.fullscreen(h + `
@@ -238,7 +238,7 @@ void main(){
   }
 
   /* Global look, tweakable at runtime (ui.js animates veil for the opening). */
-  D.look = { bloom: 0.55, grain: 0.05, vignette: 0.55, veil: 0 };
+  D.look = { bloom: 0.3, grain: 0.05, vignette: 0.55, veil: 0 };
 
   /* ------------------------------------------------------------------ state */
   const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };

@@ -418,14 +418,15 @@ vec3 shadeObj(vec3 p, vec3 rd, float t, float mat, float em, float hue, float sh
       col += vec3(.75, .07, .09) * bl * uNight.z * (1. - .93 * figShadow(pf)) * (.3 + .7 * ao);
     }
   } else col = alb * amb * 1.6;
+  col = col / (1. + .9 * col);            // keep moonlit surfaces from clipping to white
   float eK = 1. - .8 * night;
   if (mat == 1.) col = ec * (1.1 + .6 * em) * eK;
-  else if (mat == 2.) col += mix(vec3(1., .86, .66), ec, .25) * em * 1.5 * eK;
+  else if (mat == 2.) col += mix(vec3(1., .86, .66), ec, .25) * em * .95 * eK;
   else if (mat == 3.) col += ec * em * .8 * eK;
   else if (mat == 4.) col += mix(vec3(.82, .8, 1.), ec, .3) * em * eK;
   if (sh > 0.) {
     vec3 sc = mix(mix(vec3(1., .8, .55), ec, .5), vec3(1., .22, .08), max(night, uMisc.x));
-    col = mix(col, sc * (1.5 - .6 * night), sh * sh);
+    col = mix(col, sc * (.62 - .2 * night), sh * sh * .8);
   }
   return col;
 }

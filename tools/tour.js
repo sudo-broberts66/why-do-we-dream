@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-/* Screenshot the real page at fractions of the night.
+/* Screenshot the real page at fractions of the night (--y) or at given shots (--shots 5:0.5,12:0.3 = shot index : local progress).
    node tools/tour.js --y 0,0.1,0.5 [--size 1280x720] [--q 0.5] [--out prefix] [--file index.html] [--wait 600] */
 const path = require('path');
 const fs = require('fs');
 const { chromium } = require('playwright');
 const args = {};
 for (let i = 2; i < process.argv.length; i += 2) args[process.argv[i].replace(/^--/, '')] = process.argv[i + 1];
-const ys = (args.y || '0,0.25,0.5,0.75,1').split(',').map(Number);
+const ys = args.shots ? args.shots.split(',') : (args.y || '0,0.25,0.5,0.75,1').split(',').map(Number);
 const [W, H] = (args.size || '1280x720').split('x').map(Number);
 const root = path.resolve(__dirname, '..');
 const out = path.resolve(args.out || path.join(root, 'shots', 'tour'));
@@ -25,14 +25,18 @@ fs.mkdirSync(path.dirname(out), { recursive: true });
   for (const y of ys) {
     const info = await page.evaluate((y) => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo(0, max * y);
+      if (typeof y === 'string') { // "shotIndex:localProgress"
+        const [i, lp] = y.split(':').map(Number);
+        const ch = window.DREAM.chapters[i];
+        window.scrollTo(0, ch.top + ch.height * (isNaN(lp) ? 0.5 : lp) - window.innerHeight / 2);
+      } else window.scrollTo(0, max * y);
       return { max, vh: window.innerHeight };
     }, y);
     const f0 = await page.evaluate(() => window.__frames);
     await page.waitForFunction((f) => window.__frames >= f + 3, f0, { timeout: 180000 }).catch(() => errs.add('frame timeout at y=' + y));
     await page.waitForTimeout(parseInt(args.wait || '500', 10));
     const st = await page.evaluate(() => ({ active: window.DREAM.state.active, clock: document.getElementById('clock').textContent, stage: document.getElementById('stage').textContent }));
-    const file = `${out}_y${y}.png`;
+    const file = `${out}_y${String(y).replace(':', '-')}.png`;
     await page.screenshot({ path: file });
     console.log(file, JSON.stringify(st), 'screens:', (info.max / info.vh).toFixed(1));
   }

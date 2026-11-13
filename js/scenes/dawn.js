@@ -388,7 +388,7 @@ void main(){
   }
   if (ap < .999) {
     vec3 lid = vec3(.006, .005, .011);
-    if (uGlow > .001) lid += lidGlow(uv, uGlow, rim);
+    if (uGlow > .001) lid += lidGlow(uv, uGlow, rim) * .68;
     if (uMotes > .001) {
       vec3 dream = embers(uv, uMotes);
       if (uShards > .001) dream += shards(uv, uShards);

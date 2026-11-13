@@ -724,7 +724,7 @@ void main(){
   float g = uBg.w;
   vec3 glow = mix(vec3(1., .46, .62), vec3(1., .74, .50), smoothstep(.9, 0., r * .6) * .7 + .3 * f2);
   float body = exp(-dot(uv, uv) * 1.1) * (.55 + .75 * f) + .28 * f2;
-  col += glow * body * g * .62;
+  col += glow * body * g * .34;
   col += mix(vec3(.10, .035, .06), vec3(.16, .085, .06), f) * uCen.w * (.4 + .9 * f2) * (.5 + .5 * v);
   fragColor = vec4(col * uFade, 1.);
 }`;
@@ -746,7 +746,7 @@ void main(){
       motor: ss(1.68, 1.735, n) * (1 - ss(1.84, 1.9, n)),
       dive: ss(1.82, 1.95, n),
       cortex: 1 - 0.5 * ss(0.2, 0.36, n) * (1 - ss(0.58, 0.72, n)),
-      dim: 1 - 0.82 * ss(1.935, 2.0, n),
+      dim: (1 - 0.82 * ss(1.935, 2.0, n)) * (1 - 0.62 * ss(1.83, 1.92, n)),
       glow: ss(1.87, 1.93, n) * (1 - 0.86 * ss(1.94, 2.0, n)),
       haze: ss(1.9, 2.0, n),
       warmBg: ss(1.06, 1.3, n),

@@ -123,7 +123,7 @@
     var shelf = ctx.createBiquadFilter(); shelf.type = 'highshelf'; shelf.frequency.value = 7500; shelf.gain.value = -3;
     var comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -20; comp.knee.value = 14; comp.ratio.value = 2.5; comp.attack.value = 0.05; comp.release.value = 0.6;
-    var trim = ctx.createGain(); trim.gain.value = 0.5;   // master trim, before the soft clipper (which expects x/2)
+    var trim = ctx.createGain(); trim.gain.value = 0.17;   // master trim, before the soft clipper (which expects x/2)
     var clip = ctx.createWaveShaper(); // identity below 0.6, smooth ceiling at ~0.95
     clip.curve = makeCurve(function (x) { var v = Math.abs(x) * 2; if (v > 0.6) v = 0.6 + 0.35 * Math.tanh((v - 0.6) / 0.35); return x < 0 ? -v : v; }, 4097);
     var master = ctx.createGain(); master.gain.value = 0;
