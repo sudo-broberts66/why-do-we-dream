@@ -40,7 +40,8 @@ vec3 phosphenes(vec2 uv, float t, float swirl, out float blob){
   vec2 w = vec2(fbm3(q + vec2(0., t * .032)), fbm3(q * 1.13 + vec2(4.7, -t * .027)));
   float f = fbm4(q * .85 + 2.4 * (w - .5) + vec2(t * .011, 3.1));
   blob = ss(.42, .70, f);
-  float rim = exp(-pow((f - .455) / .022, 2.));          // organic, slightly brighter edge
+  float rf = (f - .455) / .022;
+  float rim = exp(-rf * rf);          // organic, slightly brighter edge
   float core = ss(.62, .86, f);
   float haze = ss(.25, .8, w.y);
   vec3 c = vec3(.050, .030, .190) * blob;
@@ -116,7 +117,8 @@ vec3 formLayer(vec2 pp, float li, float n, float p, float t, float tw, float wMu
   vec3 d = abs(fract(vc + .5) - .5) * inv;
   float w = max((.0011 + .0042 * r) * wMul, .85 * px);
   vec3 line = exp(-(d * d) / (w * w));
-  float halo = .10 / (1. + pow(d.g / (4.5 * w), 2.));
+  float hd = d.g / (4.5 * w);
+  float halo = .10 / (1. + hd * hd);
   float mainW = mix(.17, 1., exp(-v * v * 7.));
 
   // depth cues: fog down the centre, aliasing guard, slow activity pulses travelling outward
@@ -163,19 +165,19 @@ vec3 blockLayer(vec2 uv, float fl, float t, float fallP, float amount, float str
     float rw = row - float(k);
     vec2 id = vec2(cx, rw) + fl * 13.1;
     vec2 h1 = hash22(id), h2 = hash22(id + 7.7);
-    float born = ss(h1.x * .8, h1.x * .8 + .25, amount * 1.05) * step(h1.y, .62);
+    float born = ss(h1.x * .8, h1.x * .8 + .25, amount * 1.05) * step(h1.y, .52);
     if (born <= 0.) continue;
     float kind = h2.x;
     float s = kind < .74 ? .10 + .05 * h2.y : .085 + .03 * h2.y;
     vec2 bc = vec2(cx + .5 + (h1.y - .3) * .12, (rw + .32 + .36 * h2.y) * H);
     vec2 l = vec2(q.x, y) - bc;
-    float ang = (h2.x - .5) * .5 + .14 * sin(t * (.25 + .5 * h1.x) + h1.y * 40.)
-              + (h1.x > .78 ? t * .22 * sign(h2.y - .5) : 0.);
+    float ang = (h2.x - .5) * .28 + .10 * sin(t * (.25 + .5 * h1.x) + h1.y * 40.)
+              + (h1.x > .90 ? t * .22 * sign(h2.y - .5) : 0.);
     if (fract(h2.y * 7.) > .5) ang += PI * .5;
     mat2 R = rot(ang);
     float dd = blockShape(R * l, kind, s);
     float aa = .012 * soft;
-    float outline = exp(-pow(dd / aa, 2.));
+    float outline = exp(-(dd * dd) / (aa * aa));
     float fill = ss(aa, -aa, dd);
     float inner = fill * (.10 + .30 * exp(dd / (s * .45)));     // brighter toward the rim
     float glow = exp(-max(dd, 0.) / (.05 * soft)) * .16;
@@ -183,8 +185,10 @@ vec3 blockLayer(vec2 uv, float fl, float t, float fallP, float amount, float str
     float ly = l.y / stretch;
     float hw = s * (kind < .42 ? 1.25 : (kind < .74 ? 1.1 : 1.7));
     float streak = ss(hw, hw * .35, abs(l.x)) * exp(-max(ly, 0.) / .55) * step(0., l.y) * .11;
-    float g1 = exp(-pow(blockShape(R * (l - vec2(0., .26 * stretch)), kind, s) / (aa * 1.5), 2.)) * .30;
-    float g2 = exp(-pow(blockShape(R * (l - vec2(0., .56 * stretch)), kind, s) / (aa * 2.2), 2.)) * .13;
+    float e1 = blockShape(R * (l - vec2(0., .26 * stretch)), kind, s) / (aa * 1.5);
+    float e2 = blockShape(R * (l - vec2(0., .56 * stretch)), kind, s) / (aa * 2.2);
+    float g1 = exp(-e1 * e1) * .30;
+    float g2 = exp(-e2 * e2) * .13;
     float hue = fract(h1.x * 3.7 + h2.y);
     vec3 tint = hue < .55 ? vec3(.60, .52, 1.00) : (hue < .8 ? vec3(.45, .80, 1.00) : vec3(1.00, .55, .80));
     vec3 hot = mix(tint, vec3(.93, .90, 1.), .55);
@@ -205,7 +209,7 @@ vec3 fallTunnel(vec2 pp, float t, float fallX, float cool, float tw, float px){
   float u = cos(ph);
   float g = sqrt(q * q * sin(ph) * sin(ph) + 2.2);
   float inv = r / g;
-  vec3 vc = u - vec3(-1., 0., 1.) * .06;
+  vec3 vc = u - vec3(-1., 0., 1.) * .028;
   vec3 d = abs(fract(vc + .5) - .5) * inv;
   float w = max(.0012 + .0060 * r, .85 * px);
   vec3 line = exp(-(d * d) / (w * w));
@@ -238,7 +242,7 @@ void main(){
   // the hypnic jerk: the whole field tips forward and drops
   float fallX = lin(.80, 1., p);
   float tip = ss(.79, .87, p) * (1. - ss(.90, 1., p));
-  float jerk = exp(-pow((p - .838) / .02, 2.));
+  float jerk = exp(-(p - .838) * (p - .838) / .0004);
   vec2 fuv = rot(.32 * tip) * uv;
   vec2 drop = vec2(.03, -.11) * tip;
 
@@ -280,7 +284,8 @@ void main(){
   /* 4. the Tetris effect: the day's most repeated imagery drifts down through the field */
   float blA = ss(.60, .70, p) * (1. - ss(.80, .875, p));
   if (blA > 0.){
-    float fallP = 9. * ss(.58, .84, p) + 60. * pow(max(p - .80, 0.) / .1, 2.);
+    float fx = max(p - .80, 0.) / .1;
+    float fallP = 9. * ss(.58, .84, p) + 60. * fx * fx;
     float stretch = 1. + 5. * ss(.80, .87, p);
     float dim = 1. - ss(.80, .875, p);
     vec3 bl = vec3(0.);

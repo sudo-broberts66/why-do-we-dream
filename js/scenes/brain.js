@@ -180,7 +180,7 @@
       const f = 8.6;
       let nn = noise(x * f + wx * 1.7, y * f + wy * 1.7, z * f - wx * 1.7 + 5.2);
       nn += 0.3 * noise(x * f * 2.2 + 3.3, y * f * 2.2, z * f * 2.2 + 9.1);
-      let g = ss(0.025, 0.2, Math.abs(nn));
+      let g = ss(0.03, 0.17, Math.abs(nn));
       // named sulci: Sylvian fissure (where the temporal lobe meets the rest), central + precentral sulcus
       const syl = ss(0.0, 0.034, Math.abs(dMain - dT));
       const xcs = -0.05 + 0.16 * (1 - clamp(y / 0.55, 0, 1));
@@ -191,7 +191,7 @@
       g *= lerp(1, 0.35 + 0.65 * ss(0.004, 0.02, Math.abs(x - (xcs + 0.112))), dorsal);
       g *= syl;
       const under = gy < -0.55 && !temporal;
-      const keep = (0.09 + 0.91 * g) * (medial ? 0.28 : 1) * (under ? 0.5 : 1);
+      const keep = (0.035 + 0.965 * Math.pow(g, 1.4)) * (medial ? 0.07 : 1) * (under ? 0.35 : 1);
       if (rnd() > keep) continue;
       const disp = 0.012 * g - 0.032 * (1 - g) * (1 - g);
       x += gx * disp; y += gy * disp; z += gz * disp;
@@ -533,7 +533,7 @@ void main(){
     col *= ctxGain;
     // REM: cholinergic shimmer everywhere, visual cortex ablaze, PGO volleys landing at the back
     col += base * I * ach * (.22 + .9 * fl * fl);
-    col += hotMix * I * vis * limbic * (.45 + 2.3 * fl);
+    col += hotMix * I * vis * limbic * (.35 + 1.5 * fl);
     col += vec3(1., .8, .86) * I * vis * pgo * pgoOcc * 1.5;
     col = mix(col, vec3(.010, .016, .034) * I, pf * pfc * .97);      // dorsolateral prefrontal goes dark
     float mf = n1(T * 9. + s2 * 70. + aPos.z * 5.); mf *= mf;
@@ -549,10 +549,10 @@ void main(){
     col = base * bright * twk * .7;
     // pons ignites: rose-white core, PGO volleys climbing toward the midbrain
     float climb = pAct * exp(-pow((s - (.5 - pU * 1.6)) / .09, 2.)) * step(s, .55);
-    col += mix(ROSE, vec3(1., .9, .93), .25 + .6 * core) * bright * pons * (pw * (1.0 + 1.5 * pgoPons * pgo + .5 * fl) + climb * pgo * 1.3);
+    col += mix(ROSE, vec3(1., .9, .93), .25 + .6 * core) * bright * pons * (pw * (1.5 + 2.2 * pgoPons * pgo + .6 * fl) + climb * pgo * 1.6);
     // atonia: the lower medulla clamps down, glowing dull red just above the barrier
     col = mix(col, vec3(.55, .10, .16) * bright * (.5 + .3 * sin(T * 2.1 + s1 * 6.)), motor * smoothstep(.72, .98, s) * .9);
-    size = .0095 * (.8 + .5 * core); facingAmt = .7 * aB.z;
+    size = .0095 * (.8 + .5 * core) * (1. + .5 * pons * pw); facingAmt = .7 * aB.z * (1. - pons * pw);
   } else if(reg < 3.5){                                              // ---------------- thalamus
     col = mix(base, TEAL, .35 * (1. - warm)) * bright * twk * (.34 + .28 * deep);
     // sleep spindles: 13 Hz flutter riding the up-state
@@ -570,12 +570,12 @@ void main(){
     float rip = .5 + .5 * sin(s * 80. - T * 46. + s1 * 5.);
     vec3 hc = mix(vec3(.5, .97, 1.), GOLD * 1.1, tag * step(.55, s2));
     col += hc * bright * deep * (1. - .75 * limbic) * (.5 + 2.4 * burst * rip * rip * (.35 + .65 * replay));
-    col += hotMix * bright * limbic * (.7 + 2.4 * fl);
+    col += hotMix * bright * limbic * (.45 + 1.5 * fl);
     size = .0095;
   } else if(reg < 5.5){                                              // ---------------- amygdala
     col = base * bright * twk * .4;
     col += GOLD * bright * tag * (1. - limbic) * (.8 + .5 * sin(T * 1.7 + s1 * 6.));
-    col += mix(ROSE, vec3(1., .62, .55), .4) * bright * limbic * (.9 + 2.6 * fl);
+    col += mix(ROSE, vec3(1., .62, .55), .4) * bright * limbic * (.55 + 1.7 * fl);
     size = .0095;
   } else if(reg < 6.5){                                              // ---------------- spinal cord
     col = base * bright * twk * .7 * (1. - .88 * motor);
@@ -676,7 +676,7 @@ void main(){
   float depth = -vp.z;
   vec3 vd = normalize(uEye - pos);
   float ndv = dot(aNrm, vd);
-  float fc = mix(.11, 1., smoothstep(-.3, .45, ndv)) * (1. + .55 * pow(1. - abs(ndv), 3.));
+  float fc = mix(.05, 1., smoothstep(-.25, .5, ndv)) * (1. + .3 * pow(1. - abs(ndv), 3.));
   col *= mix(1., fc, facingAmt);
   col *= clamp(1. - (depth - uK4.x) * .4, .3, 1.4);                  // nearer is brighter
   col *= smoothstep(.03, .25, depth);
@@ -709,8 +709,8 @@ void main(){
   vec2 uv = (gl_FragCoord.xy - .5 * uRes) / uRes.y;
   float warmth = uBg.x;
   vec2 q = uv * 1.25 + uPointer * .025;
-  float f = fbm(vec3(q * 1.3, uTime * .028));
-  float f2 = fbm(vec3(q * 2.9 + 7., uTime * .045 + 3.));
+  float f = .5 + .32 * snoise(vec3(q * .8, uTime * .022)) + .16 * snoise(vec3(q * 1.9 + 4., uTime * .034 + 2.));
+  float f2 = .5 + .34 * snoise(vec3(q * 1.5 + 7., uTime * .04 + 3.)) + .14 * snoise(vec3(q * 3.4 + 1., uTime * .05));
   float v = smoothstep(1.25, 0., length(uv * vec2(.75, 1.)));
   vec3 tint = mix(vec3(.010, .052, .066), vec3(.064, .020, .052), warmth);
   vec3 col = tint * (.16 + 1.5 * f * f) * (.35 + .65 * v);
@@ -718,7 +718,7 @@ void main(){
   vec2 d = uv - uCen.xy; float r = length(d) / max(uCen.z, .001);
   col += mix(vec3(.016, .085, .11), vec3(.13, .045, .085), warmth) * exp(-r * r * 1.1) * uBg.y * (.55 + .7 * f2);
   // dark water: faint slanting light from far above, at the very start
-  float sh = fbm(vec2(uv.x * 2.6 + uv.y * .7 + 3., uTime * .05));
+  float sh = .5 + .5 * snoise(vec2(uv.x * 2.2 + uv.y * .6 + 3., uTime * .05));
   col += vec3(.012, .075, .09) * pow(sh, 3.) * 2.2 * smoothstep(-.55, .6, uv.y) * uBg.z;
   // the dive: soft rose-gold light swallowing the frame, then settling to a haze
   float g = uBg.w;
